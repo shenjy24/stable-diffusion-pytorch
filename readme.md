@@ -2,7 +2,7 @@
 
 ### 系统要求
 
-显卡需要支持 `CUDA`，提前安装好 [CUDA工具](https://developer.nvidia.com/cuda-toolkit-archive)，`Pytorch` 和 `CUDA` 的版本要求可以参考 https://pytorch.org/get-started/locally/，按照其要求进行依赖的安装。
+显卡需要支持 `CUDA`，提前安装好 [CUDA工具](https://developer.nvidia.com/cuda-toolkit-archive)，`Pytorch` 和 `CUDA` 的版本要求可以参考 https://pytorch.org/get-started/locally/ ，按照其要求进行依赖的安装。
 
 ```
 conda install pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
