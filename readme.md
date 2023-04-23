@@ -20,8 +20,8 @@ conda install pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvi
 #### 3. 安装`StableDiffusion`依赖
 
 ```
-conda install diffusers=0.11.1
-conda install transformers scipy ftfy accelerate
+pip install diffusers==0.11.1
+pip install transformers scipy ftfy accelerate
 ```
 
 ### 代码示例
