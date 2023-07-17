@@ -2,3 +2,5 @@
 *.iml
 target/
 image/
+model/
+**/__pycache__/
