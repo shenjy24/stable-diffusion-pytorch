@@ -34,14 +34,14 @@ def local_model_2(positive_prompt, negative_prompt):
     """
     start_time = time.time()
 
-    pipe = StableDiffusionPipeline.from_pretrained("./model/majicmix", torch_dtype=torch.float16)
+    pipe = StableDiffusionPipeline.from_pretrained("./model/majicmix", torch_dtype=torch.float16, safety_checker=None)
     # pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.scheduler = EulerDiscreteScheduler.from_config(pipe.scheduler.config)
     pipe = pipe.to("cuda")
     generator = torch.Generator("cuda").manual_seed(0)
     image = pipe(prompt=positive_prompt, negative_prompt=negative_prompt, generator=generator,
                  num_inference_steps=20).images[0]
-    image.save(f"image/{generate_random_str() + local_model_2.__name__}.png")
+    image.save(f"image/main/{generate_random_str() + local_model_2.__name__}.png")
 
     print(f"函数 {local_model_2.__name__} 的运行时间为: {time.time() - start_time} 秒")
 
