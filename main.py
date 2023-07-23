@@ -5,7 +5,7 @@
 import time
 import torch
 from huggingface_hub import snapshot_download
-from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler
+from diffusers import StableDiffusionPipeline, DPMSolverMultistepScheduler, EulerDiscreteScheduler
 
 from utils.utils import generate_random_str
 
@@ -26,18 +26,21 @@ def local_model(prompt):
     print(f"函数 {local_model.__name__} 的运行时间为: {time.time() - start_time} 秒")
 
 
-def local_model_2(prompt):
+def local_model_2(positive_prompt, negative_prompt):
     """
     加载本地模型优化版本
-    :param prompt: 提示词
+    :param positive_prompt: 正面提示词
+    :param negative_prompt: 负面提示词
     """
     start_time = time.time()
 
     pipe = StableDiffusionPipeline.from_pretrained("./model/majicmix", torch_dtype=torch.float16)
-    pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+    # pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+    pipe.scheduler = EulerDiscreteScheduler.from_config(pipe.scheduler.config)
     pipe = pipe.to("cuda")
     generator = torch.Generator("cuda").manual_seed(0)
-    image = pipe(prompt, generator=generator, num_inference_steps=20).images[0]
+    image = pipe(prompt=positive_prompt, negative_prompt=negative_prompt, generator=generator,
+                 num_inference_steps=20).images[0]
     image.save(f"image/{generate_random_str() + local_model_2.__name__}.png")
 
     print(f"函数 {local_model_2.__name__} 的运行时间为: {time.time() - start_time} 秒")
@@ -65,8 +68,10 @@ def download_model(repo):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print(torch.cuda.is_available())
-    p = "beautiful dog"
-    local_model(p)
-    local_model_2(p)
+    # p = "beautiful dog"
+    pp = "Best quality, masterpiece, ultra high res, (photorealistic:1.4), 1girl"
+    np = "ng_deepnegative_v1_75t, badhandv4"
+    # local_model(p)
+    local_model_2(pp, np)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
