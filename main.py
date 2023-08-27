@@ -53,7 +53,7 @@ def download_model(repo):
 if __name__ == '__main__':
     print(torch.cuda.is_available())
     # p = "beautiful dog"
-    pp = "Best quality, masterpiece, ultra high res, (photorealistic:1.4), 1girl"
-    np = "badhandv4"
+    pp = "1girl"
+    np = "ng_deepnegative_v1_75t, badhandv4"
     local_model(pp, np)
     # remote_model(pp, np)
