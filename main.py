@@ -51,7 +51,7 @@ def download_model(repo):
 if __name__ == '__main__':
     print(torch.cuda.is_available())
     # p = "beautiful dog"
-    pp = "Best quality, masterpiece, ultra high res, (photorealistic:1.4), 1girl"
+    pp = "非常英俊的男人,超写实风格,细致纹理,逼真的3D效果,量子分形,由Artgerm和Epic Game Art创作,ArtStation上的热门作品"
     np = "ng_deepnegative_v1_75t, badhandv4"
     local_model(pp, np)
     # remote_model(pp, np)

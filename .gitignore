@@ -4,3 +4,4 @@ target/
 image/
 model/
 **/__pycache__/
+mnist/
