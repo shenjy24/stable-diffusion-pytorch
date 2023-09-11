@@ -1,7 +1,7 @@
 import time
 
 import torch
-from diffusers import StableDiffusionPipeline, EulerDiscreteScheduler, DiffusionPipeline, \
+from diffusers import StableDiffusionPipeline, DiffusionPipeline, \
     EulerAncestralDiscreteScheduler
 from huggingface_hub import snapshot_download
 
@@ -21,7 +21,8 @@ def local_model(positive_prompt, negative_prompt):
     pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.config)
     pipe = pipe.to("cuda")
     # generator = torch.Generator("cuda").manual_seed(-1)
-    image = pipe(prompt=positive_prompt, negative_prompt=negative_prompt, num_inference_steps=20).images[0]
+    image = pipe(prompt=positive_prompt, negative_prompt=negative_prompt,
+                 num_inference_steps=20, callback=progress).images[0]
     image.save(f"image/main/{generate_random_str() + local_model.__name__}.png")
 
     print(f"函数 {local_model.__name__} 的运行时间为: {time.time() - start_time} 秒")
@@ -45,6 +46,17 @@ def download_model(repo):
     :param repo: 模型名
     """
     snapshot_download(repo_id=repo)
+
+
+def progress(step, timestep, latents):
+    """
+    绘图过程的回调方法，用于展示进度
+    :param step:
+    :param timestep:
+    :param latents:
+    :return:
+    """
+    print(f"step={step}, timestep={timestep}, latents={latents}")
 
 
 # Press the green button in the gutter to run the script.
