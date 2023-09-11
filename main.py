@@ -1,4 +1,5 @@
 import time
+from functools import partial
 
 import torch
 from diffusers import StableDiffusionPipeline, DiffusionPipeline, \
@@ -8,7 +9,7 @@ from huggingface_hub import snapshot_download
 from utils.utils import generate_random_str
 
 
-def local_model(positive_prompt, negative_prompt):
+def local_model(rid, positive_prompt, negative_prompt):
     """
     加载本地模型优化版本
     :param positive_prompt: 正面提示词
@@ -22,7 +23,7 @@ def local_model(positive_prompt, negative_prompt):
     pipe = pipe.to("cuda")
     # generator = torch.Generator("cuda").manual_seed(-1)
     image = pipe(prompt=positive_prompt, negative_prompt=negative_prompt,
-                 num_inference_steps=20, callback=progress).images[0]
+                 num_inference_steps=20, callback=partial(progress, rid)).images[0]
     image.save(f"image/main/{generate_random_str() + local_model.__name__}.png")
 
     print(f"函数 {local_model.__name__} 的运行时间为: {time.time() - start_time} 秒")
@@ -48,7 +49,7 @@ def download_model(repo):
     snapshot_download(repo_id=repo)
 
 
-def progress(step, timestep, latents):
+def progress(rid, step, timestep, latents):
     """
     绘图过程的回调方法，用于展示进度
     :param step:
@@ -56,14 +57,16 @@ def progress(step, timestep, latents):
     :param latents:
     :return:
     """
-    print(f"step={step}, timestep={timestep}, latents={latents}")
+    print(f"RID: {rid}, Step: {step}, Timestep: {timestep}")
+    # print(f"Latents: {latents}")
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print(torch.cuda.is_available())
     # p = "beautiful dog"
+    rid = generate_random_str()
     pp = "非常英俊的男人,超写实风格,细致纹理,逼真的3D效果,量子分形,由Artgerm和Epic Game Art创作,ArtStation上的热门作品"
     np = "ng_deepnegative_v1_75t, badhandv4"
-    local_model(pp, np)
+    local_model(rid, pp, np)
     # remote_model(pp, np)
