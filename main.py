@@ -10,6 +10,16 @@ from huggingface_hub import snapshot_download
 from utils.utils import generate_random_str
 
 
+def load_safetensors(positive_prompt, negative_prompt):
+    pipeline = StableDiffusionPipeline.from_single_file(
+        "https://huggingface.co/JonasSim/TWingshadow_v1.4/blob/main/twing_shadow_v1.4.safetensors",
+        torch_dtype=torch.float16, use_safetensors=True
+    )
+    pipeline = pipeline.to("cuda")
+    image = pipeline(prompt=positive_prompt, negative_prompt=negative_prompt, num_inference_steps=20).images[0]
+    return image
+
+
 def upscale_image(positive_prompt, negative_prompt, low_res_img):
     # load model and scheduler
     model_id = "stabilityai/stable-diffusion-x4-upscaler"
@@ -29,14 +39,15 @@ def upscale_image(positive_prompt, negative_prompt, low_res_img):
     return upscale_img
 
 
-def get_image(positive_prompt, negative_prompt):
+def get_image(model, positive_prompt, negative_prompt):
     """
     加载本地模型优化版本
     :param positive_prompt: 正面提示词
     :param negative_prompt: 负面提示词
     """
     # 直接从缓存目录.cache中获取，将随机数目录名改为majicmix
-    pipe = StableDiffusionPipeline.from_pretrained("./model/majicmix", torch_dtype=torch.float16, safety_checker=None)
+    pipe = StableDiffusionPipeline.from_pretrained(model, torch_dtype=torch.float16, safety_checker=None,
+                                                   force_download=True, resume_download=False)
     pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.config)
     pipe = pipe.to("cuda")
     image = pipe(prompt=positive_prompt, negative_prompt=negative_prompt, num_inference_steps=20).images[0]
@@ -100,13 +111,16 @@ if __name__ == '__main__':
     print(torch.cuda.is_available())
     # p = "beautiful dog"
     # rid = generate_random_str()
-    pp = "huge-bust,1girl"
+    pp = "beautiful,young,1girl"
     np = "ng_deepnegative_v1_75t, badhandv4"
     # local_model(rid, pp, np)
     # remote_model(pp, np)
-    # image1 = get_image(pp, np)
-    # image1.save(f"image/main/{generate_random_str() + '_' + get_image.__name__}.png")
+    image1 = get_image("digiplay/TWingshadow_v1.2", pp, np)
+    image1.save(f"image/main/{generate_random_str() + '_' + get_image.__name__}.png")
 
-    image2 = Image.open('image/main/87c0b48ba96c4db8a6c2d1ace2fa4110_get_image.png')
-    img = upscale_image(pp, np, image2)
-    img.save(f"image/main/{generate_random_str() + '_' + upscale_image.__name__}.png")
+    # image2 = Image.open('image/main/87c0b48ba96c4db8a6c2d1ace2fa4110_get_image.png')
+    # img = upscale_image(pp, np, image2)
+    # img.save(f"image/main/{generate_random_str() + '_' + upscale_image.__name__}.png")
+    #
+    # img = load_safetensors(pp, np)
+    # img.save(f"image/main/{generate_random_str() + '_' + load_safetensors().__name__}.png")
