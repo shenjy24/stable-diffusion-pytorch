@@ -115,7 +115,7 @@ if __name__ == '__main__':
     np = "ng_deepnegative_v1_75t, badhandv4"
     # local_model(rid, pp, np)
     # remote_model(pp, np)
-    image1 = get_image("digiplay/TWingshadow_v1.2", pp, np)
+    image1 = get_image("./model/twing_shadow_v1.2", pp, np)
     image1.save(f"image/main/{generate_random_str() + '_' + get_image.__name__}.png")
 
     # image2 = Image.open('image/main/87c0b48ba96c4db8a6c2d1ace2fa4110_get_image.png')
