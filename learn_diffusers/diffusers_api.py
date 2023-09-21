@@ -35,14 +35,6 @@ def upscale_image(positive_prompt, negative_prompt, low_res_img):
         model_id, revision="fp16", torch_dtype=torch.float16
     )
     pipeline = pipeline.to("cuda")
-
-    # let's download an  image
-    # url = "https://huggingface.co/datasets/hf-internal-testing/diffusers-images/resolve/main/sd2-upscale/low_res_cat.png"
-    # response = requests.get(url)
-    # low_res_img = Image.open(BytesIO(response.content)).convert("RGB")
-    # low_res_img = low_res_img.resize((128, 128))
-    # prompt = "a white cat"
-
     upscale_img = pipeline(prompt=positive_prompt, negative_prompt=negative_prompt, image=low_res_img).images[0]
     return upscale_img
 

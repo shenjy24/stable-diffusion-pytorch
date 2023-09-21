@@ -61,13 +61,19 @@ def upscale(request_id, model_id, positive_prompt, negative_prompt):
     return upscale_img
 
 
-def upscale_local_image(request_id, positive_prompt, negative_prompt, image_url):
+def upscale_local_image(request_id, image_url, positive_prompt, negative_prompt):
     low_res_img = Image.open(image_url)
     img = upscale_image(request_id, positive_prompt, negative_prompt, low_res_img)
     return img
 
 
-def upscale_remote_image(request_id, positive_prompt, negative_prompt, image_url):
+def latent_upscale_local_image(request_id, image_url, positive_prompt, negative_prompt):
+    low_res_img = Image.open(image_url)
+    img = latent_upscale_image(request_id, positive_prompt, negative_prompt, low_res_img)
+    return img
+
+
+def upscale_remote_image(request_id, image_url, positive_prompt, negative_prompt):
     response = requests.get(image_url)
     low_res_img = Image.open(BytesIO(response.content)).convert("RGB")
     img = upscale_image(request_id, positive_prompt, negative_prompt, low_res_img)
@@ -150,6 +156,7 @@ def progress(request_id, step, timestep, latents):
     :param latents:
     :return:
     """
+    torch.cuda.empty_cache()
     print(f"RID: {request_id}, Step: {step}, Timestep: {timestep}")
     # print(f"Latents: {latents}")
 
@@ -157,10 +164,10 @@ def progress(request_id, step, timestep, latents):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print(torch.cuda.is_available())
-    pp = "cat"
-    np = ""
+    pp = "young,1girl"
+    np = "ng_deepnegative_v1_75t, badhandv4"
     request_id = generate_random_str()
     # upscale(request_id, "./model/majicmix", pp, np)
-    # latent_upscale(request_id, "./model/majicmix", pp, np)
-    img = upscale_local_image(request_id, pp, np, "image/main/img.png")
-    img.save(f"image/main/upscale_local_image.png")
+    latent_upscale(request_id, "./model/majicmix", pp, np)
+    # img = latent_upscale_local_image(request_id, "image/main/img.png", pp, np)
+    # img.save(f"image/main/upscale_local_image.png")
