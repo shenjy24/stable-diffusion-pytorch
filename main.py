@@ -34,6 +34,7 @@ def upscale_image(request_id, positive_prompt, negative_prompt, low_res_img):
     )
     pipeline.scheduler = EulerDiscreteScheduler.from_config(pipeline.scheduler.config)
     pipeline = pipeline.to("cuda")
+    pipeline.enable_attention_slicing()
     upscale_img = pipeline(prompt=positive_prompt, negative_prompt=negative_prompt, image=low_res_img,
                            num_inference_steps=20, callback=partial(progress, request_id)).images[0]
     return upscale_img
@@ -167,7 +168,7 @@ if __name__ == '__main__':
     pp = "young,1girl"
     np = "ng_deepnegative_v1_75t, badhandv4"
     request_id = generate_random_str()
-    # upscale(request_id, "./model/majicmix", pp, np)
-    latent_upscale(request_id, "./model/majicmix", pp, np)
+    upscale(request_id, "./model/majicmix", pp, np)
+    # latent_upscale(request_id, "./model/majicmix", pp, np)
     # img = latent_upscale_local_image(request_id, "image/main/img.png", pp, np)
     # img.save(f"image/main/upscale_local_image.png")

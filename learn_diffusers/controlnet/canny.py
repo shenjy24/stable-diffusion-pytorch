@@ -34,7 +34,7 @@ def use_controlnet(canny_img):
     # When running enable_model_cpu_offload, do not manually move the pipeline to GPU with .to("cuda")
     # once CPU offloading is enabled, the pipeline automatically takes care of GPU memory management
     pipe.enable_model_cpu_offload()
-    # pipe.enable_xformers_memory_efficient_attention()
+    pipe.enable_xformers_memory_efficient_attention()
 
     prompt = ", best quality, extremely detailed"
     prompt = [t + prompt for t in ["Sandra Oh", "Kim Kardashian", "rihanna", "taylor swift"]]
