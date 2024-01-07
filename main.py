@@ -140,6 +140,22 @@ def remote_model(positive_prompt, negative_prompt):
     image.save(f"image/main/{generate_random_str() + '_' + remote_model.__name__}.png")
 
 
+def lcm_model(positive_prompt, negative_prompt):
+    pipe = DiffusionPipeline.from_pretrained("SimianLuo/LCM_Dreamshaper_v7", local_files_only=True)
+
+    # To save GPU memory, torch.float16 can be used, but it may compromise image quality.
+    pipe.to(torch_device="cuda", torch_dtype=torch.float16)
+
+    pipe.enable_model_cpu_offload()
+
+    # Can be set to 1~50 steps. LCM support fast inference even <= 4 steps. Recommend: 1~8 steps.
+    num_inference_steps = 4
+
+    image = pipe(prompt=positive_prompt, negative_prompt=negative_prompt, num_inference_steps=num_inference_steps,
+                 guidance_scale=8.0, lcm_origin_steps=50, output_type="pil").images[0]
+    image.save(f"image/main/{generate_random_str() + '_' + lcm_model.__name__}.png")
+
+
 def download_model(repo):
     """
     下载模型
@@ -164,11 +180,14 @@ def progress(request_id, step, timestep, latents):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print(torch.cuda.is_available())
+    # print(torch.cuda.is_available())
+    start_time = time.time()
     pp = "young,1girl"
     np = "ng_deepnegative_v1_75t, badhandv4"
-    request_id = generate_random_str()
-    upscale(request_id, "./model/majicmix", pp, np)
+    # request_id = generate_random_str()
+    # upscale(request_id, "./model/majicmix", pp, np)
     # latent_upscale(request_id, "./model/majicmix", pp, np)
     # img = latent_upscale_local_image(request_id, "image/main/img.png", pp, np)
     # img.save(f"image/main/upscale_local_image.png")
+    lcm_model(pp, np)
+    print(f"函数 {lcm_model.__name__} 的运行时间为: {time.time() - start_time} 秒")
